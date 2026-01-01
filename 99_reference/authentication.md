@@ -112,5 +112,3 @@ git remote set-url origin git@github.com:ユーザー名/リポジトリ名.git
 ```
 
 これで、以降はパスワードなしで `git push` が可能になります。
-
-## コラム ： 一時的に別のアカウントにする
