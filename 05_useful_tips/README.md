@@ -89,6 +89,8 @@ vendor/
 
 コミットID（a1b2c...）は覚えにくいので、特定のコミットに「v1.0.0」のような分かりやすい名札をつける機能です。
 
+あまり自分で作成することはないと思いますが、オープンソースのフレームワークはタグを指定してクローンすることがあるので、機能としては覚えておいてください。
+
 ```bash
 # タグをつける
 git tag v1.0.0
@@ -104,6 +106,83 @@ git push origin v1.0.0
 ```bash
 git push origin v1.0.0
 ```
+
+## 5. 【コラム】設定はどこにある？ (`git config` の優先度)
+
+最初の章で `git config --global user.name` を設定しましたが、実は設定場所は **3箇所** あります。
+
+「現場のPCで `user.name` を設定したはずなのに、コミットしたら違う名前になっていた！」という事故を防ぐために、優先順位を覚えましょう。
+
+### 3つの設定場所と優先度
+
+Gitは以下の順で設定を読み込みます。**「下に行くほど（リポジトリに近いほど）優先される」** と覚えてください。
+
+| 優先順位 | スコープ | 場所 | 説明 |
+| :--- | :--- | :--- | :--- |
+| **低** | **System** | `/etc/gitconfig` | PCを利用する全ユーザー共通（管理者権限が必要） |
+| **中** | **Global** | `~/.gitconfig` | あなた専用の設定（`--global` で設定するのはこれ） |
+| **高** | **Local** | `.git/config` | **そのリポジトリ専用の設定** |
+
+### よくあるトラブルと解決策
+
+**Q. 普段は「会社のアドレス」を使っているけど、このリポジトリだけ「個人のアドレス」にしたい。**
+
+**A. `Local` 設定を使います。**
+そのリポジトリのフォルダに移動して、`--global` を付けずに設定コマンドを打ちます。
+
+```bash
+# このリポジトリだけ設定を上書きする
+git config user.email "my_private_email@example.com"
+```
+
+### 設定の確認方法
+「今、どの設定が適用されているか」を知るには、以下のコマンドが最強です。
+
+```bash
+# どこで設定されているか（ファイルの場所）まで表示する
+git config --list --show-origin
+```
+
+## 6. 自社のリポジトリにPUSHする（リモートの追加）
+
+「基本は自分の学習用Github（origin）だが、自社の学習だけは別のGithubに送りたい」 というケースがあります。
+
+`git push` の後に URL を直接書くこともできますが、毎回長いURLを打つのは大変です。
+
+「宛先（リモート）」を追加登録 する方法を覚えましょう。
+
+### 手順
+
+現在の宛先を確認します。通常は `origin` に `clone` した先のURLが登録されています。
+
+```bash
+git remote -v
+# origin  https://github.com/t-inoue0214/starter-git-and-github.git (fetch)
+# origin  https://github.com/t-inoue0214/starter-git-and-github.git (push)
+```
+
+ここに、自社のリポジトリを my-company という名前で追加します。
+
+```bash
+# 書式: git remote add <好きな名前> <URL(github.com の前にアットマークの前にアカウント名を入れる)>
+git remote add my-company https://t-inoue0214@github.com/t-inoue0214/starter-git-and-github.git
+```
+
+### 使い分け
+
+プッシュする時に、宛先の名前を指定して切り替えます。
+
+```bash
+# 現場（origin）に送る場合
+git push origin main
+
+# 自社（my-company）に送る場合
+git push my-company main
+```
+
+**【重要】** セキュリティの注意  
+現場のソースコード（機密情報）を、誤って自社のリポジトリにPushしてしまうと情報漏洩になります。  
+「どのファイルを」「どこに送ろうとしているか」、Pushする前に必ず確認しましょう。
 
 ## 完了したら
 

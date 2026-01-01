@@ -10,14 +10,14 @@ Gitは「いつ、**誰が**、何をしたか」を厳格に記録します。�
 
 以下のコマンドをターミナルに入力してください。
 
-※ 実際の開発現場では会社のアドレスなどを使用しますが、ここでは練習用のもので構いません。
+※ 実際の開発現場では会社のアドレスなどを使用しますが、ここではGitHubのアカウントと同じ物にしてください。
 
 ```bash
 # ユーザー名の設定（ローマ字推奨）
-git config --global user.name "Taro Yamada"
+git config --global user.name "toshi-inoue"
 
 # メールアドレスの設定
-git config --global user.email "taro@example.com"
+git config --global user.email "toshi-inoue@example.co.jp"
 ```
 
 設定できたか確認してみましょう。
