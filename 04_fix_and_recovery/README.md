@@ -165,3 +165,7 @@ git push -f origin main
 | 特定の機能だけ取り込みたい | - | `cherry-pick` |
 | Pushした内容を取り消したい | Yes | `revert` (一番安全) |
 | 歴史を書き換えてPushしたい | Yes | 絶対ダメ (または要相談) |
+
+## 次のステップ
+
+次は [05. 現場で役立つ便利機能：Stash, Ignore, Tag](/05_useful_tips/README.md) へ進みます。

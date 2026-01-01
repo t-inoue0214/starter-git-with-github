@@ -134,6 +134,6 @@ GitHubでPull Request (PR) を出した後、レビュアー（先輩）から�
   - `GitHub Flow`: シンプルなフロー
   - `Git Flow`: 複雑ではあるがさまざまな変更に対応したフロー
 
-## 完了したら
+## 次のステップ
 
-次は [04. 失敗と修正：リカバリの作法と禁忌](./04_fix_and_recovery/README.md) へ進みます。
+次は [04. 失敗と修正：リカバリの作法と禁忌](/04_fix_and_recovery/README.md) へ進みます。

@@ -104,3 +104,7 @@ git push origin v1.0.0
 ```bash
 git push origin v1.0.0
 ```
+
+## 完了したら
+
+すべての課題がクリアできれば、本リポジトリの内容は修了です！
