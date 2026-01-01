@@ -1,0 +1,15 @@
+{
+    "name": "Git CLI Training",
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-ceintl.vscode-language-pack-ja"
+            ],
+            "settings": {
+                "terminal.integrated.fontSize": 14
+            }
+        }
+    },
+    "postCreateCommand": "bash .devcontainer/setup.sh"
+}
