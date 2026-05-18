@@ -7,7 +7,7 @@ Codespacesでは自動で認証が行われていますが、現場のPCや自�
 以下のどちらかの方法で設定する必要があります。
 
 1. **HTTPS + 個人アクセストークン (PAT)**: 設定が比較的簡単。
-1. **SSH鍵認証**: 初期設定は手前だが、一度設定すれば楽。（推奨）
+1. **SSH鍵認証**: 初期設定は手間だが、一度設定すれば楽。（推奨）
 
 ## 0. 事前準備 (Windowsユーザーの方へ)
 
@@ -42,8 +42,8 @@ Windowsには標準でGitコマンドが入っていません。
 
 パスワード入力中は画面に何も表示されませんが、入力されています。
 
-```Bash
-Username for '<https://github.com>': <あなたのGitHubユーザー名>
+```bash
+Username for 'https://github.com': <あなたのGitHubユーザー名>
 Password for 'https://...': <さっきコピーしたトークンを貼り付け>
 ```
 
@@ -63,9 +63,9 @@ Git for Windows をインストールしている場合、「Git Credential Mana
 
 Git Bash (Windows) または ターミナル (Mac) を開き、以下のコマンドを入力します。
 
-```Bash
+```bash
 # -t ed25519 は最新の暗号化方式を指定しています
-# -C の後ろはコメントです（自分のメアドなど
+# -C の後ろはコメントです（自分のメアドなど）
 ssh-keygen -t ed25519 -C "<your_email@example.com>"
 ```
 
@@ -77,14 +77,14 @@ ssh-keygen -t ed25519 -C "<your_email@example.com>"
 
 #### Windows (Git Bash)
 
-```Bash
+```bash
 cat ~/.ssh/id_ed25519.pub
 # 表示された ssh-ed25519 AAAA... をコピー
 ```
 
 #### Mac
 
-```Bash
+```bash
 pbcopy < ~/.ssh/id_ed25519.pub
 # これでクリップボードにコピーされます
 ```
@@ -101,10 +101,11 @@ pbcopy < ~/.ssh/id_ed25519.pub
 
 設定が成功したか確認します。
 
-```Bash
-ssh -T <git@github.com>
-Are you sure you want to continue connecting? と聞かれたら yes と入力。
+```bash
+ssh -T git@github.com
 ```
+
+`Are you sure you want to continue connecting?` と表示されたら `yes` と入力してください。
 
 `Hi <ユーザー名>! You've successfully authenticated...` と表示されれば成功です！
 
@@ -116,27 +117,27 @@ Are you sure you want to continue connecting? と聞かれたら yes と入力�
 
 以下のエラーが出る場合、この設定が必要です。
 
-+ `remote: Invalid username or token. fatal: Authentication failed for '<https://github.com/>...'`
++ `remote: Invalid username or token. fatal: Authentication failed for 'https://github.com/...'`
 
 #### 確認と変更
 
 まず、現在の設定を確認します。
 
-```Bash
+```bash
 git remote -v
-# origin  <https://github.com/ユーザー/リポジトリ.git>  <-- これだとSSH鍵が使われません
+# origin  https://github.com/ユーザー/リポジトリ.git  <-- これだとSSH鍵が使われません
 ```
 
-`https://` から始まっている場合は、以下のコマンドで `<git@github.com>` (SSH用) に書き換えます。
+`https://` から始まっている場合は、以下のコマンドで `git@github.com` (SSH用) に書き換えます。
 
-```Bash
+```bash
 # 通信方式を HTTPS から SSH に変更する
 git remote set-url origin git@github.com:ユーザー/リポジトリ.git
 ```
 
 再度確認して、以下のように変わっていればOKです。
 
-```Bash
+```bash
 git remote -v
 # 以下のように "git@github.com:..." から始まっていればOKです
 # origin  git@github.com:ユーザー/リポジトリ.git (fetch)
@@ -144,3 +145,8 @@ git remote -v
 ```
 
 これで、以降はパスワードなしで `git push` が可能になります。
+
+---
+
+| [← 第06章: 実践シナリオ](../06_practical_scenarios/README.md) | [全章目次](../README.md) | 最終章 |
+|:---|:---:|---:|

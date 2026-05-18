@@ -2,6 +2,17 @@
 
 ここでは、毎日の開発をよりスムーズかつ安全に進めるための、3つの重要な機能を紹介します。
 
+**この章で学ぶコマンド:**
+
+- `git stash` / `git stash pop` / `git stash apply` — 作業の一時退避と復元
+- `git tag` — リリースへの目印付け
+- `git config` — 設定の確認と優先度
+- `git remote add` — 複数リモートの登録
+- `git log --grep` / `git log -S` / `git log -p` — コミット履歴の検索
+- `git blame` — 行ごとの変更者確認
+- `git diff` — 差分確認（各種オプション）
+- `git worktree` — 複数ブランチの同時展開
+
 ## 1. ゴミを無視する `.gitignore`
 
 Gitは「全てのファイル」を管理しようとしますが、管理したくないファイルもあります。
@@ -75,7 +86,17 @@ vendor/
     ```bash
     # 最新の退避内容を戻して、リストから消す
     git stash pop
+
+    # リストから消さずに戻す（同じ退避内容を複数ブランチで使い回したい場合）
+    git stash apply
     ```
+
+    **`pop` と `apply` の違い：**
+
+    | コマンド | 退避リストから削除 | 使いどころ |
+    | :--- | :---: | :--- |
+    | `git stash pop` | される | 通常はこちら |
+    | `git stash apply` | されない | 同じ変更を別ブランチにも適用したい時 |
 
 ただし、いくらでも保存しておける魔法の方法でありません。
 
@@ -107,7 +128,7 @@ git push origin v1.0.0
 git push origin v1.0.0
 ```
 
-## 5. 【コラム】設定はどこにある？ (`git config` の優先度)
+## 4. 【コラム】設定はどこにある？ (`git config` の優先度)
 
 最初の章で `git config --global user.name` を設定しましたが、実は設定場所は **3箇所** あります。
 
@@ -144,7 +165,7 @@ git config user.email "my_private_email@example.com"
 git config --list --show-origin
 ```
 
-## 6. 自社のリポジトリにPUSHする（リモートの追加）
+## 5. 自社のリポジトリにPUSHする（リモートの追加）
 
 「基本は自分の学習用Github（origin）だが、自社の学習だけは別のGithubに送りたい」 というケースがあります。
 
@@ -158,15 +179,15 @@ git config --list --show-origin
 
 ```bash
 git remote -v
-# origin  https://github.com/t-inoue0214/starter-git-and-github.git (fetch)
-# origin  https://github.com/t-inoue0214/starter-git-and-github.git (push)
+# origin  https://github.com/あなたのアカウント名/リポジトリ名.git (fetch)
+# origin  https://github.com/あなたのアカウント名/リポジトリ名.git (push)
 ```
 
 ここに、自社のリポジトリを my-company という名前で追加します。
 
 ```bash
 # 書式: git remote add <好きな名前> <URL(github.com の前にアットマークの前にアカウント名を入れる)>
-git remote add my-company https://t-inoue0214@github.com/t-inoue0214/starter-git-and-github.git
+git remote add my-company https://あなたのアカウント名@github.com/あなたのアカウント名/リポジトリ名.git
 ```
 
 ### 使い分け
@@ -185,11 +206,11 @@ git push my-company main
 現場のソースコード（機密情報）を、誤って自社のリポジトリにPushしてしまうと情報漏洩になります。  
 「どのファイルを」「どこに送ろうとしているか」、Pushする前に必ず確認しましょう。
 
-## 7. 調査テクニック：過去を追跡する
+## 6. 調査テクニック：過去を追跡する
 
 トラブル対応で必須となる「犯人探し」や「差分確認」のコマンドです。
 
-### 7-1. コミットログを検索する
+### 6-1. コミットログを検索する
 
 「あのバグ修正いつやったっけ？」を調べる時。
 
@@ -200,9 +221,15 @@ git log --grep="バグ修正"
 # コードの中身（追加・削除された行）から検索（通称: Pickaxe）
 # "password" という文字列を誤ってコミットした場所を探す時などに便利
 git log -S "password"
+
+# コミット日時の範囲で絞り込む
+git log --after="2024-01-01" --before="2024-03-31"
+
+# 別名: --since と --until も同じ意味（相対指定も可能）
+git log --since="2 weeks ago" --until="yesterday"
 ```
 
-### 7-2. ファイル単体の歴史を見る
+### 6-2. ファイル単体の歴史を見る
 
 リポジトリ全体ではなく、「今開いているこのファイル」 が過去どう変更されてきたか（コミットID）を調べます。
 
@@ -214,11 +241,11 @@ git log index.html
 git log -p index.html
 ```
 
-### 7-3. 特定の行の変更者を探す（Blame）
+### 6-3. 特定の行の変更者を探す（Blame）
 
 「このコードの15行目を書いたのは誰だ（いつの変更だ）？」をピンポイントで調べます。 名前は Blame（非難する）と物騒ですが、意図や経緯を知るために非常に強力なコマンドです。
 
-```Bash
+```bash
 # ファイル全体の各行に、コミット情報を表示
 git blame index.html
 ```
@@ -237,7 +264,7 @@ git blame -L 10,20 index.html
 
  左から コミットID 著者 日時 行番号 実際のコード の順に表示されます。 ここで怪しいコミットIDを見つけたら、次の git show で詳細を確認します。
 
-### 7-4. 過去の変更内容を確認する（Diff）
+### 6-4. 過去の変更内容を確認する（Diff）
 
 上で調べたコミットID（例: `a1b2c`）を使って、「具体的に何が変わったか」を見ます。
 
@@ -246,7 +273,53 @@ git blame -L 10,20 index.html
 git show a1b2c index.html
 ```
 
-### 7-5. ブランチ間の差分をすべて確認する
+### 6-5. diff のよく使うオプション
+
+`git diff` は状況に応じてオプションを使い分けるのが実務での定番です。
+
+```bash
+# 作業中のファイルと最後のコミットを比較（まだ add していない変更）
+git diff HEAD
+
+# ステージング済みの変更を確認（add した後、commit する前）
+git diff --cached
+git diff --staged   # --cached と同じ意味
+
+# 変更されたファイル名と増減行数の一覧（中身は見ない）
+git diff --stat
+git diff --stat HEAD
+
+# ブランチ間の全差分
+git diff main develop
+
+# 差分があるファイル名だけ表示
+git diff --name-only main develop
+
+# スペース・タブの違いを無視して比較（インデント変更だけのコミットをレビューする時）
+git diff -w
+git diff --ignore-all-space
+
+# 改行コード（CR/LF）の違いを無視（WindowsとMacが混在するチームで便利）
+git diff -b
+git diff --ignore-cr-at-eol
+
+# 単語単位で色付き差分表示（文章の一部変更を見やすくする）
+git diff --color-words
+```
+
+**使い分けのイメージ：**
+
+| タイミング | コマンド | 用途 |
+| :--- | :--- | :--- |
+| add 前 | `git diff HEAD` | 「何を変えたか」確認 |
+| add 後・commit 前 | `git diff --cached` | 「コミットされる内容」確認 |
+| push 前 | `git diff --stat origin/main` | 「リモートと何が違うか」確認 |
+| リリース後 | `git diff --name-only main develop` | 「本番と開発に差分がないか」確認 |
+| インデント変更レビュー | `git diff -w` | スペース・タブの差分を無視 |
+| 異OS混在環境 | `git diff -b` | 改行コードの差分を無視 |
+| 文章・コメント変更の確認 | `git diff --color-words` | 単語単位で色付き表示 |
+
+### 6-6. ブランチ間の差分をすべて確認する
 
 リリース作業や切り戻し（Revert）を行った後、「本当に本番環境（main）と開発環境（develop）に差分がないか？」を確認する重要な操作です。
 
@@ -260,7 +333,7 @@ git diff --name-only main develop
 
 何も表示されなければ、2つのブランチは完全に一致しています。
 
-## 8. 長期間の作業中に最新を取り込む（リバースマージ）
+## 7. 長期間の作業中に最新を取り込む（リバースマージ）
 
 自分のブランチ（feature/A）で開発中に、他の人の緊急対応（feature/B）などが先に `develop` にマージされることがあります。
 
@@ -304,6 +377,60 @@ git diff --name-only main develop
 
 これで、あなたのブランチは「最新のコード」かつ「自分の変更も入っている」最強の状態になります。安心して開発を続けてください。
 
+## 8. 複数環境での同時作業：git worktree
+
+「本番ブランチ（`main`）を触りながら、別ブランチで機能開発もしたい」というシチュエーションがあります。
+
+通常、`git checkout` でブランチを切り替えると、作業中のファイルが切り替わります。しかし **`git worktree`** を使うと、**同じリポジトリを複数のフォルダに同時展開** できます。
+
+### 基本操作
+
+```bash
+# 現在のリポジトリとは別に、../hotfix-dir に hotfix/v1 ブランチを展開する
+git worktree add ../hotfix-dir hotfix/v1
+```
+
+これで `../hotfix-dir` に hotfix/v1 ブランチの中身が入った作業フォルダが作られます。
+
+```
+プロジェクトフォルダ/        ← main ブランチで開発中
+../hotfix-dir/              ← hotfix/v1 で緊急対応中
+```
+
+それぞれのフォルダで独立してコミット・pushができます。
+
+### 確認・削除
+
+```bash
+# 現在の worktree 一覧を確認
+git worktree list
+
+# 使い終わったら削除
+git worktree remove ../hotfix-dir
+```
+
+### ユースケース
+
+- 本番環境の緊急バグ対応中に、別ブランチで機能開発を続けたい
+- GitHub Codespaces などのリモート環境で、スワップ不要で複数ブランチを同時作業したい
+
+> **注意:** 同じブランチを複数の worktree に展開することはできません。
+
+### stash と worktree の使い分け
+
+どちらも「作業を中断して別のことをする」ための機能ですが、目的と方法が異なります。
+
+| | `git stash` | `git worktree` |
+| :--- | :--- | :--- |
+| 作業の保存先 | スタック（退避リスト） | 別フォルダ |
+| ブランチ切り替え | 必要（同じフォルダを使い回す） | 不要（フォルダが分かれる） |
+| 向いている場面 | 「数分〜数時間の中断」緊急対応など | 「数日〜数週間の並行作業」複数ブランチを同時進行 |
+| エディタ・ターミナル | 1つのウィンドウで切り替える | 別ウィンドウで独立して開ける |
+
+**選び方の目安:**
+- 「すぐ戻ってくる短い割り込み」→ `git stash`
+- 「2つのブランチを長期間並行作業したい」→ `git worktree`
+
 ## 9. Submodule（サブモジュール）の紹介
 
 1つのリポジトリの中に、別のリポジトリを埋め込む機能です。
@@ -314,6 +441,27 @@ git diff --name-only main develop
 
 ここで知るべきは、機能の存在を知っておけばOKです。
 
-## 完了したら
+## まとめ
 
-すべての課題がクリアできれば、本リポジトリの内容は修了です！
+この章では以下のコマンドと機能を覚えました。
+
+| コマンド / 機能 | 意味 | RPGでの例え |
+| -- | -- | -- |
+| `.gitignore` | 管理対象から除外するファイルを指定 | セーブデータに含めたくないものを除外リストに書く |
+| `git stash` | 作業中の変更を一時退避 | 中断して別クエストに行く前に荷物を倉庫に預ける |
+| `git stash pop` | 退避した変更を取り出す（リストから削除） | 倉庫から荷物を取り出して続きをプレイする |
+| `git stash apply` | 退避した変更を取り出す（リストに残す） | 荷物のコピーを取り出して、原本は倉庫に残す |
+| `git tag v1.0.0` | コミットに目印をつける | セーブポイントに「v1.0クリア」とラベルを貼る |
+| `git blame` | 行ごとに変更者・日時を確認 | 誰がどの装備を変更したか台帳で確認する |
+| `git log --grep` | コミットメッセージで検索 | 冒険日誌からキーワードで記録を探す |
+| `git diff --cached` | ステージング済みの差分確認 | コミット前に「セーブ内容」を最終確認する |
+| `git worktree` | 複数ブランチを同時展開 | 本編と裏クエストを別々のセーブデータで同時進行する |
+
+## 次のステップ
+
+次は [06. 実践シナリオ：GitHub Flow で仕事をする](../06_practical_scenarios/README.md) へ進みます。
+
+---
+
+| [← 第04章: 失敗と修正](../04_fix_and_recovery/README.md) | [全章目次](../README.md) | [第06章: 実践シナリオ →](../06_practical_scenarios/README.md) |
+|:---|:---:|---:|
